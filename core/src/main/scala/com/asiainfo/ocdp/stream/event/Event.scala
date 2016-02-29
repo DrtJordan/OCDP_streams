@@ -335,16 +335,8 @@ class Event extends Serializable {
         // 把list放入线程池更新codis
         if (index == size - 1) batchList += batchArrayBuffer.toArray
       }
-      val outPutList = eventServer.getEventCache(eventCacheService, batchList.toArray, time_EventId, conf.getInterval)
-      val outPutJsonList = scala.collection.mutable.Map[String,String]()
-      outPutList.map(line=>{
-                // 解析json数据，拼凑eventKey，去除重复营销的key
-        val current = Json4sUtils.jsonStr2Map(line)
-        val eventKeyValue = uniqKeys.split(":").map(current(_)).mkString(":")
-        outPutJsonList += (eventKeyValue -> line)
-      })
-      val output = outPutJsonList.map(line =>line._2).toList
-      output.iterator
+      val outPutJsonList = eventServer.getEventCache(eventCacheService, batchList.toArray, time_EventId, conf.getInterval)
+      outPutJsonList.iterator
     })
   }
 
